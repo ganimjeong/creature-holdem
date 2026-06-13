@@ -24,6 +24,8 @@ export interface HandStrength {
   name: string
   /** Detailed description, e.g. "Full House, A's over K's". */
   description: string
+  /** Codes of the 5 cards forming the best hand, e.g. ["As","Ah","Ad","Ks","Kc"]. */
+  cards: string[]
   /** Internal solved object (used for comparison only). */
   solved: SolvedHand
 }
@@ -31,7 +33,9 @@ export interface HandStrength {
 /** Evaluate the best 5-card hand from any 5-7 cards. */
 export function evaluateHand(cards: Card[]): HandStrength {
   const solved = Hand.solve(cards.map(cardCode))
-  return { name: solved.name, description: solved.descr, solved }
+  // pokersolver Card objects stringify back to our "Rs" code (e.g. "Td", "As").
+  const winningCards = (solved.cards ?? []).map((c) => String(c))
+  return { name: solved.name, description: solved.descr, cards: winningCards, solved }
 }
 
 export type Showdown =

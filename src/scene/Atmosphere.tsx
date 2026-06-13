@@ -4,6 +4,9 @@ import { useFrame } from '@react-three/fiber'
 import { Sparkles } from '@react-three/drei'
 import { THEME } from './layout'
 
+// (The room behind the table is now the dimmed hayloft HDRI set up in Scene; the
+// old painted backdrop plane was removed so it doesn't occlude that cabin.)
+
 /**
  * Floating dust and ember haze that gives the scene depth without ever feeling
  * busy: a broad, cold field of fine motes drifting through the whole room, a

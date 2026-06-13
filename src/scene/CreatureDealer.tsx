@@ -7,7 +7,8 @@ import { DEALER_ANCHOR, THEME } from './layout'
 // Cached colors so we lerp without allocating per frame.
 const EYE_BASE = new THREE.Color(THEME.creatureGlow)
 const EYE_BLOOD = new THREE.Color(THEME.bloodGlow)
-const ROBE_COLOR = new THREE.Color(THEME.background)
+// Lifted just off pure black so the silhouette is faintly readable in the dark.
+const ROBE_COLOR = new THREE.Color('#16121c')
 
 /**
  * The creature dealer: a tall hooded silhouette looming behind the far table
@@ -123,7 +124,8 @@ export function CreatureDealer() {
           color={ROBE_COLOR}
           roughness={1}
           metalness={0}
-          emissive={'#000000'}
+          emissive={'#0c0814'}
+          emissiveIntensity={0.4}
           side={THREE.DoubleSide}
         />
       </mesh>

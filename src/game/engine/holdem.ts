@@ -35,6 +35,8 @@ export interface HandResult {
   potWon: number
   playerHandName?: string
   dealerHandName?: string
+  /** Codes of the 5 cards that made the winning hand (showdown only). */
+  winningCards?: string[]
   showdown?: Showdown
 }
 
@@ -417,12 +419,15 @@ function doShowdown(state: HandState) {
     state.dealer.chips += potWon - half
   }
 
+  // The five cards to spotlight: the winner's best hand (player's on a split).
+  const winnerStrength = result.winner === 'dealer' ? result.dealer : result.player
   state.result = {
     winner: result.winner,
     reason: 'showdown',
     potWon,
     playerHandName: result.player.name,
     dealerHandName: result.dealer.name,
+    winningCards: winnerStrength.cards,
     showdown: result,
   }
   state.street = 'complete'

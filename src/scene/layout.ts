@@ -42,8 +42,9 @@ export function communityPos(i: number): [number, number, number] {
   return [(i - 2) * CARD_GAP, CARD_Y, 0]
 }
 
-/** Where the creature dealer looms, behind the far edge. */
-export const DEALER_ANCHOR = new THREE.Vector3(0, 0, -2.7)
+/** Where the creature dealer looms — behind the far table edge and raised so it
+ *  towers ABOVE the felt and cards rather than standing in them. */
+export const DEALER_ANCHOR = new THREE.Vector3(0, 0.4, -3.5)
 
 /** Chip-stack anchors for player and dealer bets. */
 export const CHIP_ANCHOR = {

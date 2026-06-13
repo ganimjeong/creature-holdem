@@ -5,9 +5,10 @@
 
 import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { useThree, useFrame } from '@react-three/fiber'
+import { useFrame } from '@react-three/fiber'
 import { useGame } from '../game/store/gameStore'
-import { CAMERA, THEME } from './layout'
+import { THEME } from './layout'
+import { cameraBus } from './cameraBus'
 
 const PARTICLE_COUNT = 60
 const PARTICLE_LIFE = 1.2 // seconds
@@ -22,18 +23,13 @@ interface ParticleState {
 }
 
 export function FxRig() {
-  const { camera } = useThree()
-
   // Track which pulse we've already consumed so each fires exactly once.
   const lastFxId = useRef<number>(-1)
 
-  // --- camera shake (decaying amplitude) ---
+  // --- camera shake (decaying amplitude; written to the shared camera bus) ---
   const shake = useRef(0)
-  const shakeMax = useRef(0) // for normalized falloff
   const shakeFreq = useRef(34)
   const shakeTime = useRef(0)
-  const camBase = useMemo(() => CAMERA.position.clone(), [])
-  const camTarget = useMemo(() => CAMERA.target.clone(), [])
 
   // --- flash point light (intensity + color decayed each frame) ---
   const flashLight = useRef<THREE.PointLight>(null!)
@@ -183,36 +179,26 @@ export function FxRig() {
       }
     }
 
-    // --- camera shake ---
+    // --- camera shake -> camera bus (CameraRig composes it into the camera) ---
     if (shake.current > 0.0008) {
       shakeTime.current += delta
       const amt = shake.current
       const t = shakeTime.current
       // layered sine + slight randomness for an organic jolt
-      const ox =
-        Math.sin(t * shakeFreq.current) * amt +
-        (Math.random() - 0.5) * amt * 0.5
-      const oy =
+      cameraBus.shake.set(
+        Math.sin(t * shakeFreq.current) * amt + (Math.random() - 0.5) * amt * 0.5,
         Math.cos(t * shakeFreq.current * 0.8) * amt * 0.8 +
-        (Math.random() - 0.5) * amt * 0.4
-      const oz = Math.sin(t * shakeFreq.current * 1.3) * amt * 0.5
-      camera.position.set(
-        camBase.x + ox,
-        camBase.y + oy,
-        camBase.z + oz,
+          (Math.random() - 0.5) * amt * 0.4,
+        Math.sin(t * shakeFreq.current * 1.3) * amt * 0.5,
       )
-      camera.lookAt(camTarget)
       // exponential-ish decay
       shake.current = THREE.MathUtils.damp(shake.current, 0, 3.2, delta)
     } else if (shake.current !== 0) {
-      // settle exactly back to base
+      // settle exactly back to zero
       shake.current = 0
       shakeTime.current = 0
-      camera.position.copy(camBase)
-      camera.lookAt(camTarget)
+      cameraBus.shake.set(0, 0, 0)
     }
-    // keep shakeMax referenced (avoids unused-on-some-paths churn)
-    shakeMax.current = shake.current
 
     // --- flash light decay ---
     if (flashLight.current) {

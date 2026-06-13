@@ -31,7 +31,7 @@ export function Lighting() {
   return (
     <>
       {/* Faint cold fill so deep shadows read as cold-blue rather than dead black. */}
-      <ambientLight intensity={0.06} color={THEME.cold} />
+      <ambientLight intensity={0.11} color={THEME.cold} />
 
       {/* Warm candle key hanging over the table center. Tight falloff via decay so
           the corners of the room stay pitch black. */}
@@ -52,22 +52,42 @@ export function Lighting() {
         shadow-radius={4}
       />
 
-      {/* Low cold rim behind the creature to trace its silhouette against black. */}
+      {/* Soft warm fill over the player's seat so the hole cards read clearly
+          without lifting the rest of the gloom. Tight distance keeps it local. */}
       <pointLight
-        position={[0, 1.6, -4]}
-        color={THEME.cold}
-        intensity={2.4}
-        distance={6.5}
+        position={[0, 1.5, 2.6]}
+        color={THEME.candle}
+        intensity={3.2}
+        distance={3.4}
         decay={2}
+      />
+
+      {/* Cold rim behind the creature to trace its silhouette against black. */}
+      <pointLight
+        position={[0, 2.2, -4.6]}
+        color={THEME.cold}
+        intensity={3.6}
+        distance={7.5}
+        decay={2}
+      />
+
+      {/* Dim cold front-fill grazing the creature so its form reads faintly
+          without lifting the table's gloom. */}
+      <pointLight
+        position={[0, 2.4, -1.9]}
+        color={THEME.cold}
+        intensity={1.1}
+        distance={3.4}
+        decay={2.2}
       />
 
       {/* A whisper of sickly creature glow rising from the far edge, reinforcing
           the rim without spilling onto the felt. */}
       <pointLight
-        position={[0, 0.9, -3.1]}
+        position={[0, 1.2, -3.2]}
         color={THEME.creatureGlow}
-        intensity={0.55}
-        distance={3.2}
+        intensity={0.7}
+        distance={3.4}
         decay={2.4}
       />
     </>
