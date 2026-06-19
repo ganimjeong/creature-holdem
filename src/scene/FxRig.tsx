@@ -172,6 +172,26 @@ export function FxRig() {
           launchBurst(0.7, emberColor.clone(), true)
           break
         }
+        case 'ritual': {
+          // A sickly green surge as a ritual fires.
+          shake.current = 0.08
+          shakeFreq.current = 38
+          flashColor.current.set(THEME.creatureGlow)
+          flashIntensity.current = 4.5
+          flashDecay.current = 4.5
+          launchBurst(0.8, new THREE.Color(THEME.creatureGlow), true)
+          break
+        }
+        case 'victory': {
+          // A triumphant golden eruption.
+          shake.current = 0.2
+          shakeFreq.current = 26
+          flashColor.current.set(THEME.candle)
+          flashIntensity.current = 12
+          flashDecay.current = 2.2
+          launchBurst(1.8, new THREE.Color(THEME.candle), true)
+          break
+        }
         case 'deal':
         default:
           // negligible

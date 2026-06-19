@@ -151,3 +151,157 @@
   text-shadow: 0 0 40px rgba(224,48,31,0.8), 0 4px 0 #000; }
 .death__sub { color: var(--ink-dim); letter-spacing: 0.2em; text-transform: uppercase; font-size: 13px; }
 .death__stats { color: var(--ink); font-size: 15px; }
+
+/* =====================================================================
+   Roguelike layer — map, intro, reward, shop, event, rest, victory,
+   ritual rail, and HUD additions (souls / charms / creature tell).
+   ===================================================================== */
+
+/* ---- shared full-screen node screens ---- */
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 30px; text-align: center;
+  padding: 32px; box-sizing: border-box;
+  background: radial-gradient(ellipse at center, rgba(8,5,3,0.35), rgba(3,2,1,0.9));
+  animation: riseScreen 0.45s ease both; overflow-y: auto; overflow-x: hidden; }
+/* Full-screen panels: fade + small lift only. (NOT the `rise` keyframe — that
+   one carries a translateX(-50%) meant for left:50% elements like .reveal, which
+   would shove a full-width inset:0 panel half the viewport to the left.) */
+@keyframes riseScreen { from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); } }
+.screen__head { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.screen__title { font-family: var(--display); font-weight: 900; font-size: clamp(26px, 5vw, 52px);
+  color: var(--ink); text-shadow: 0 0 26px rgba(255,122,26,0.4), 0 2px 0 #000; }
+.screen__souls { color: var(--creature); letter-spacing: 0.12em; font-size: 15px;
+  text-shadow: 0 0 12px rgba(141,255,99,0.5); }
+
+/* ---- run map: node choices ---- */
+.nodecards { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+  width: 100%; max-width: 980px; box-sizing: border-box; }
+.nodecard { pointer-events: auto; cursor: pointer; width: 240px; min-height: 230px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 18px;
+  font-family: var(--serif); color: var(--ink);
+  background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 8px;
+  box-shadow: inset 0 0 24px rgba(0,0,0,0.6), 0 6px 28px rgba(0,0,0,0.7);
+  transition: transform 0.1s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+.nodecard:hover { transform: translateY(-4px); border-color: var(--brass);
+  box-shadow: var(--glow-brass), 0 10px 34px rgba(0,0,0,0.8); }
+.nodecard__icon { font-size: 40px; line-height: 1; filter: drop-shadow(0 0 10px rgba(255,122,26,0.5)); }
+.nodecard__label { font-family: var(--display); font-size: 21px; }
+.nodecard__sub { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brass); }
+.nodecard__hint { font-size: 12px; color: var(--ink-dim); margin-top: auto; line-height: 1.4; }
+.nodecard--elite { border-color: rgba(224,48,31,0.5); }
+.nodecard--elite:hover { border-color: var(--blood); box-shadow: 0 0 16px rgba(224,48,31,0.5); }
+.nodecard--elite .nodecard__sub { color: var(--blood); }
+.nodecard--boss { border-color: var(--ember); }
+.nodecard--boss .nodecard__icon { filter: drop-shadow(0 0 16px rgba(255,42,42,0.8)); }
+.nodecard--shop .nodecard__sub { color: var(--creature); }
+
+/* ---- creature intro ---- */
+.intro__card { max-width: 520px; padding: 36px 34px; display: flex; flex-direction: column;
+  align-items: center; gap: 12px; border-color: color-mix(in srgb, var(--eye, var(--brass)) 50%, transparent); }
+.intro__tier { color: var(--eye, var(--brass)); }
+.intro__name { font-family: var(--display); font-weight: 900; font-size: clamp(30px, 6vw, 56px);
+  color: var(--ink); text-shadow: 0 0 26px color-mix(in srgb, var(--eye, #fff) 55%, transparent); }
+.intro__title { font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-dim); }
+.intro__flavor { color: var(--ink-dim); font-size: 15px; line-height: 1.6; font-style: italic; }
+.intro__tell { width: 100%; margin: 8px 0 4px; padding: 14px 16px; border-radius: 6px;
+  background: rgba(141,255,99,0.06); border: 1px solid rgba(141,255,99,0.3); }
+.intro__tell-label { font-size: 11px; letter-spacing: 0.22em; color: var(--creature); }
+.intro__tell p { margin: 6px 0 0; color: var(--ink); font-size: 14px; line-height: 1.5; }
+
+/* ---- reward: pick a charm ---- */
+.charmcards { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center;
+  width: 100%; max-width: 920px; box-sizing: border-box; }
+.charmcard { pointer-events: auto; cursor: pointer; width: 260px; padding: 20px;
+  display: flex; flex-direction: column; gap: 10px; text-align: left; color: var(--ink);
+  font-family: var(--serif); background: var(--panel);
+  border: 1px solid var(--panel-edge); border-radius: 8px;
+  box-shadow: inset 0 0 24px rgba(0,0,0,0.6), 0 6px 28px rgba(0,0,0,0.7);
+  transition: transform 0.1s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+.charmcard:hover { transform: translateY(-4px); border-color: var(--brass-bright); box-shadow: var(--glow-brass); }
+.charmcard__rarity { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--brass); }
+.charmcard--rare .charmcard__rarity { color: var(--creature); }
+.charmcard--cursed { border-color: rgba(224,48,31,0.4); }
+.charmcard--cursed .charmcard__rarity { color: var(--blood); }
+.charmcard__name { font-family: var(--display); font-size: 20px; }
+.charmcard__flavor { font-size: 13px; color: var(--ink-dim); line-height: 1.5; }
+.charmcard__downside { font-size: 12px; color: #e8a06a; line-height: 1.45;
+  border-top: 1px solid rgba(201,146,63,0.2); padding-top: 8px; }
+.charmcards__skip { margin-top: 6px; }
+
+/* ---- shop ---- */
+.shopgrid { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+  width: 100%; max-width: 980px; box-sizing: border-box; }
+.shopitem { width: 220px; padding: 18px; display: flex; flex-direction: column; gap: 8px; text-align: left;
+  background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 8px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.55); }
+.shopitem--sold { opacity: 0.4; filter: grayscale(0.7); }
+.shopitem__tag { font-size: 10px; letter-spacing: 0.2em; color: var(--brass); }
+.shopitem--ritual .shopitem__tag { color: var(--creature); }
+.shopitem--mend .shopitem__tag { color: var(--blood); }
+.shopitem__name { font-family: var(--display); font-size: 18px; color: var(--ink); }
+.shopitem__body { font-size: 12px; color: var(--ink-dim); line-height: 1.5; flex: 1; }
+.shopitem__downside { font-size: 11px; color: #e8a06a; line-height: 1.4; }
+.shopitem__buy { margin-top: 6px; align-self: stretch; }
+
+/* ---- event / rest cards ---- */
+.event__card { max-width: 500px; padding: 32px 30px; display: flex; flex-direction: column;
+  align-items: center; gap: 14px; text-align: center; }
+.event__name { font-family: var(--display); font-size: clamp(24px, 5vw, 40px); color: var(--ink); }
+.event__flavor { color: var(--ink-dim); font-size: 15px; line-height: 1.6; font-style: italic; }
+.event__result { color: var(--brass-bright); font-size: 16px; line-height: 1.6; }
+.event__options { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.event__option { display: flex; justify-content: space-between; align-items: center; gap: 16px; width: 100%; }
+.event__cost { font-size: 12px; color: var(--brass-bright); letter-spacing: 0.06em; text-transform: none; }
+
+/* ---- victory ---- */
+.victory { position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 26px; text-align: center;
+  background: radial-gradient(ellipse at center, rgba(60,40,0,0.3), rgba(2,1,0,0.92));
+  animation: riseScreen 0.8s ease both; }
+.victory__title { font-family: var(--display); font-weight: 900; font-size: clamp(44px, 11vw, 120px);
+  color: var(--brass-bright); letter-spacing: 0.05em; text-shadow: 0 0 48px rgba(255,176,74,0.7), 0 4px 0 #000; }
+.victory__sub { color: var(--ink-dim); letter-spacing: 0.16em; text-transform: uppercase; font-size: 13px; }
+.victory__stats { color: var(--ink); font-size: 15px; line-height: 1.7; }
+
+/* ---- ritual rail (in-hand active abilities) ---- */
+.ritualbar { position: absolute; right: 20px; bottom: 150px; display: flex; flex-direction: column;
+  align-items: flex-end; gap: 8px; pointer-events: none; }
+.ritualbar__label { font-size: 10px; letter-spacing: 0.18em; color: var(--creature); pointer-events: none; }
+.ritualbar__row { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.ritualbtn { pointer-events: auto; cursor: pointer; min-width: 130px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  font-family: var(--serif); font-size: 13px; letter-spacing: 0.04em; color: var(--ink);
+  padding: 9px 13px; border: 1px solid rgba(141,255,99,0.45); border-radius: 5px;
+  background: linear-gradient(180deg, rgba(20,40,16,0.6), rgba(8,14,6,0.85));
+  transition: transform 0.08s ease, box-shadow 0.18s ease; }
+.ritualbtn:hover:not(:disabled) { box-shadow: 0 0 14px rgba(141,255,99,0.5); transform: translateY(-1px); }
+.ritualbtn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(0.6); }
+.ritualbtn__name { font-family: var(--display); }
+.ritualbtn__cost { color: var(--creature); font-size: 12px; }
+.ritualbtn--targeting { flex-direction: column; gap: 8px; pointer-events: auto;
+  background: rgba(20,40,16,0.85); padding: 10px; border-radius: 6px; border: 1px solid var(--creature); }
+.ritualbtn__targets { display: flex; gap: 6px; }
+.ritualbtn__targets .btn { padding: 6px 10px; font-size: 12px; }
+
+/* ---- HUD additions ---- */
+.hud__topleft { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.hud__souls { font-size: 16px; color: var(--creature); letter-spacing: 0.08em;
+  text-shadow: 0 0 10px rgba(141,255,99,0.5); }
+.hud__charms { display: flex; gap: 6px; flex-wrap: wrap; max-width: 320px; }
+.charmchip { pointer-events: auto; font-size: 10px; letter-spacing: 0.06em; padding: 3px 8px;
+  border-radius: 4px; color: var(--ink); background: rgba(20,14,9,0.8);
+  border: 1px solid var(--brass-dark); cursor: help; }
+.charmchip--rare { border-color: rgba(141,255,99,0.5); }
+.charmchip--cursed { border-color: rgba(224,48,31,0.5); }
+.hud__tell { margin-top: 6px; font-size: 11px; color: var(--ink-dim); max-width: 360px;
+  line-height: 1.4; letter-spacing: 0.03em; }
+.hud__warn { position: absolute; left: 50%; transform: translateX(-50%); font-size: 12px;
+  letter-spacing: 0.06em; padding: 4px 12px; border-radius: 4px; }
+.hud__warn--bad { top: 116px; color: #ffb0b0; background: rgba(60,0,0,0.5); border: 1px solid rgba(224,48,31,0.4); }
+.hud__warn--good { top: 144px; color: #c9ffb0; background: rgba(10,40,4,0.5); border: 1px solid rgba(141,255,99,0.4); }
+
+/* ---- reveal: effect-layer messages ---- */
+.reveal__effects { display: flex; flex-direction: column; gap: 4px; }
+.reveal__effect { font-size: 13px; color: var(--brass-bright); letter-spacing: 0.04em;
+  text-shadow: 0 1px 4px #000; }

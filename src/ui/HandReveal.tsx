@@ -12,12 +12,18 @@ const VERDICT: Record<
 export function HandReveal() {
   const hand = useGame((s) => s.hand)
   const lastResult = useGame((s) => s.lastResult)
+  const effectMessages = useGame((s) => s.effectMessages)
   const continueRun = useGame((s) => s.continueRun)
 
   if (!hand || hand.street !== 'complete' || !lastResult) return null
 
   const verdict = VERDICT[lastResult.winner]
   const isShowdown = lastResult.reason === 'showdown'
+
+  // Beating the creature this hand ends the encounter — phrase the button for it.
+  const bustsDealer = hand.dealer.chips <= 0
+  const bustsPlayer = hand.player.chips <= 0
+  const cta = bustsDealer ? 'CLAIM THE SPOILS' : bustsPlayer ? 'BACK TO THE TABLE' : 'CONTINUE'
 
   return (
     <div className="reveal">
@@ -34,8 +40,16 @@ export function HandReveal() {
         </div>
       )}
 
+      {effectMessages.length > 0 && (
+        <div className="reveal__effects">
+          {effectMessages.map((m, i) => (
+            <div key={i} className="reveal__effect">{m}</div>
+          ))}
+        </div>
+      )}
+
       <button className="btn btn--ember" onClick={() => continueRun()}>
-        {isShowdown ? 'CONTINUE' : 'DEAL NEXT HAND'}
+        {cta}
       </button>
     </div>
   )

@@ -15,6 +15,25 @@ bundled binary asset is the background environment.
 | `textures/beam_wall_01/` | [Beam Wall 01](https://polyhaven.com/a/beam_wall_01) | `CabinRoom.tsx` — cabin walls |
 | `textures/brown_planks_05/` | [Brown Planks 05](https://polyhaven.com/a/brown_planks_05) | `CabinRoom.tsx` — floor + ceiling |
 
+### Creature dealers (CC0, [Quaternius](https://quaternius.com/) "Ultimate Monsters", via [Poly Pizza](https://poly.pizza/))
+
+Rigged + animated GLB monsters in `models/creatures/`, loaded by `CreatureModel.tsx`.
+Each is mapped to one creature in `src/game/content/creatures.ts`; the loader
+auto-normalises size, tints to the creature's eye color, and switches animation
+clips by intent (idle / attack / flinch / death).
+
+| File | Monster | Creature |
+| --- | --- | --- |
+| `creatures/gambler.glb` | Orc | The Gambler |
+| `creatures/hoarder.glb` | Mushroom King | The Hoarder |
+| `creatures/watcher.glb` | Ghost | The Watcher |
+| `creatures/tithe.glb` | Green Blob | The Tithe-Eater |
+| `creatures/furnace.glb` | Goleling (golem) | Boiler-Heart |
+| `creatures/twin.glb` | Alien | The Hollow Twin |
+| `creatures/leech.glb` | Demon | The Vein-Drinker |
+| `creatures/jester.glb` | Wizard | The Two-Faced Jester |
+| `creatures/maw.glb` | Dragon | The Clockwork Maw (boss) |
+
 Models are Poly Haven glTF (1k) with their textures + `.bin` mirrored locally so
 the game runs offline. The room itself (`CabinRoom.tsx`) is procedural geometry
 clad in the plank/beam textures; props (`CabinProps.tsx`) auto-scale to a target

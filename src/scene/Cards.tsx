@@ -288,6 +288,7 @@ function PlayingCard({
 export function Cards() {
   const hand = useGame((s) => s.hand)
   const lastResult = useGame((s) => s.lastResult)
+  const revealDealerHole = useGame((s) => s.revealDealerHole)
   if (!hand) return null
 
   // The five cards forming the winning hand (set only at showdown). Used to
@@ -333,7 +334,7 @@ export function Cards() {
           key={c.id}
           card={c}
           position={dealerHolePos(i)}
-          faceUp={!hand.dealerHoleHidden}
+          faceUp={!hand.dealerHoleHidden || revealDealerHole}
           index={i}
           highlight={winners.has(code(c))}
         />

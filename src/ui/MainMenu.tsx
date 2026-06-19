@@ -14,13 +14,14 @@ export function MainMenu() {
         pot &mdash; or it keeps more than your chips.
       </p>
       <p className="menu__tagline">
-        Heads-up Texas Hold&rsquo;em. Bust the creature to climb a round; bust
-        out and it feeds.
+        Descend through a den of creature dealers, each with its own cruel edge
+        and its own tell. Hoard <em>souls</em>, bind <em>charms</em>, spend blood
+        on <em>rituals</em> &mdash; and break the Clockwork Maw at the bottom.
       </p>
       <button className="btn btn--ember" onClick={startRun}>
-        Sit at the Table
+        Begin the Descent
       </button>
-      <p className="menu__hint">Lose all three lives and you die.</p>
+      <p className="menu__hint">Every edge has a counter. Nothing here is invincible — not even you.</p>
     </div>
   )
 }

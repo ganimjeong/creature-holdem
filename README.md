@@ -12,10 +12,20 @@ bloom, and effects that erupt when a big hand hits or the pot swings.
 
 ## Concept
 
-- **Roguelike survival run.** Heads-up (1v1) against the creature dealer, hand after hand.
-- **Bust the dealer** → it returns hungrier, blinds climb, the run deepens.
-- **Bust yourself** → lose a life. Run out of lives → the death screen.
-- Atmosphere, tension, and juicy win/lose feedback over realism.
+A roguelike **descent** through a den of creature dealers — Inscryption's rule-bending
+dealer, Slay the Spire's branching map + relics, Balatro's legible build modifiers.
+
+- **The descent.** A branching map of nodes: dealers, elites, shops, events, rests, and a
+  final boss (the Clockwork Maw). Pick your path down.
+- **Diverse creatures.** Each dealer is built around one memorable edge — a bluffer, a
+  hoarder that never lies, a watcher that reads a card, a pot-taxing glutton, a mirror,
+  a soul-leech, a river-cheating jester. **Every edge has a telegraphed counter (its
+  *tell*) — nothing on this felt is invincible.**
+- **Charms** (passive relics), **Rituals** (active, soul-fuelled abilities), and **Souls**
+  (the currency) give the run build variety and tactical depth. Every charm/ritual carries
+  an honest cost or a creature that counters it.
+- **Lives.** Bust out of a duel → lose a life and re-sit. Out of lives → you die.
+  Break the boss → you win.
 
 ## Tech stack
 
@@ -53,7 +63,15 @@ src/
       holdem.ts    heads-up betting state machine (the heart of the rules)
       dealerAI.ts  the creature's decision-making
       engine.test.ts
-    run/roguelike.ts   lives, blind schedule, round scaling
+    content/         the roguelike data (declarative — easy to balance)
+      creatures.ts   the bestiary: each creature's edge, tell, AI profile
+      charms.ts      passive relics (each with a built-in downside/counter)
+      rituals.ts     active, soul-fuelled abilities
+      events.ts      non-combat map nodes (risk/reward choices)
+    run/
+      roguelike.ts   lives, blind schedule, run economy constants
+      map.ts         the branching descent (pure, seedable)
+      modifiers.ts   THE effect layer — applies every charm/creature/ritual edge
     store/gameStore.ts central zustand store — the contract the UI + scene read
   scene/           the 3D stage (three.js)
     layout.ts      shared world coordinates + THEME palette
@@ -79,12 +97,27 @@ both reading a single `gameStore`) keeps the rules testable and the visuals swap
 5. The result triggers an `fx` pulse → `FxRig` (3D bursts/shake) + `HandReveal` (UI).
 6. `gameStore.continueRun()` applies roguelike transitions (round up / life lost / death).
 
+## Design rule: no invincibility
+
+Every advantage is paired with a counter, so no build (or creature) is unbeatable:
+
+- **Creatures** telegraph a weakness — the Gambler over-bluffs (call it down), the
+  Hoarder never bluffs (steal its pots), the Watcher sees one card (bluff the other or
+  Veil it), the Jester cheats only the river (win it by the turn).
+- **Charms** carry honest costs — Gambler's Heart buys a life but starts you poorer;
+  Vein Tap drains the creature on a win but drains *you* on a loss; Widow's Veil cuts
+  both ways.
+- **Rituals** all spend scarce **souls**, so the economy itself caps them; several add a
+  once-per-hand limit or simply miss (Hex does nothing to a strong hand).
+
+The poker **engine stays pure**; the entire roguelike layer is applied in `run/modifiers.ts`
+and orchestrated by the store, so the rules stay testable and the meta-game lives in one place.
+
 ## Roadmap (beyond the slice)
 
-- Full multi-raise betting polish, side-pot edge cases, alternating button.
-- Smarter dealer (bluff modeling, pot odds), run meta (curses/relics between rounds).
-- Real CC0 creature model + rigged animation, PBR table textures, HDRI lighting.
-- Sound design (boiler-room ambience, card flips, win/lose stingers).
+- Per-card dealer reveals for the Veil; charm/ritual upgrade tiers; relic synergies.
+- Real CC0 creature models per dealer, rigged animation, PBR table textures.
+- Sound design (boiler-room ambience, card flips, ritual stingers).
 - Mobile controls, web deploy (Vercel / itch.io).
 
 ## License
