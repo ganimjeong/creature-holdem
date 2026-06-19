@@ -35,6 +35,20 @@ export function dealerChipsForRound(round: number): number {
   return Math.round(DEALER_START_CHIPS * (1 + round * 0.6))
 }
 
+// ---- run economy (souls) ----
+/** Souls handed out the first time you reach each shop/rest, etc. */
+export const REST_SCAVENGE_SOULS = 3
+export const REST_MEND_LIVES = 1
+/** Shop price (in souls) to mend a lost life. */
+export const MEND_LIFE_COST = 6
+/** How many charms a post-combat reward offers. */
+export const REWARD_CHARM_CHOICES = 3
+
+/** Maximum lives, given owned charms' +life effects. */
+export function maxLivesWith(charmLivesDelta: number): number {
+  return STARTING_LIVES + charmLivesDelta
+}
+
 /** A short, ominous title for the current depth. */
 export function roundTitle(round: number): string {
   const titles = [

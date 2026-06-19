@@ -270,6 +270,26 @@ export function applyAction(
   return state
 }
 
+/**
+ * Force `folder` to fold regardless of whose turn it is, awarding the pot to the
+ * other seat. Used by the Hex ritual, which makes a weak creature concede. Pure.
+ */
+export function forceFold(prev: HandState, folder: Seat): HandState {
+  if (prev.street === 'complete' || prev.street === 'showdown') return prev
+  const state: HandState = {
+    ...prev,
+    player: { ...prev.player, hole: prev.player.hole.slice() },
+    dealer: { ...prev.dealer, hole: prev.dealer.hole.slice() },
+    community: prev.community.slice(),
+    deck: prev.deck.slice(),
+    log: prev.log.slice(),
+  }
+  state[folder].folded = true
+  log(state, `${folder === 'player' ? 'You' : 'The Dealer'} folds.`)
+  finishByFold(state, other(folder))
+  return state
+}
+
 function clampRaise(state: HandState, seat: Seat, raiseTo: number): number {
   const { minRaiseTo, maxRaiseTo } = getLegalActions(state, seat)
   return Math.max(minRaiseTo, Math.min(maxRaiseTo, raiseTo))
